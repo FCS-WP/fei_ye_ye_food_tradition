@@ -1,0 +1,67 @@
+.single-product {
+  .elementor-add-to-cart {
+    form {
+      &.cart {
+        display: block !important;
+      }
+    }
+  }
+}
+.variation-PickUpDate,
+.variation-Add-on {
+  font-size: 14px;
+  margin: 0 !important;
+}
+.elementor-menu-cart__product-name.product-name {
+  a {
+    color: var(--e-global-color-primary) !important;
+  }
+}
+.spb-booking-box {
+  border: 1px solid #e5e5e5;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  background: #fafafa;
+}
+.spb-booking-box .spb-title {
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+.spb-booking-box .spb-fixed-info {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+.spb-booking-box .spb-section {
+  margin-bottom: 20px;
+}
+.spb-booking-box .spb-label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+}
+.spb-booking-box #pickup_date {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+.spb-booking-box .spb-note {
+  font-size: 12px;
+  color: #777;
+  margin-top: 6px;
+  display: block;
+}
+.spb-booking-box .spb-addon {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+.spb-booking-box .spb-walkin-note {
+  font-size: 12px;
+  font-style: italic;
+  color: #666;
+  margin-top: 10px;
+}

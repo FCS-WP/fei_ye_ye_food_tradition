@@ -1,0 +1,23 @@
+.footer-info {
+  .e-con-inner {
+    .footer-colum {
+      position: relative;
+      &:after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+        width: 2px;
+        height: 50px;
+        background-color: #fff;
+        color: var(--e-global-color-primary);
+      }
+      &:last-child {
+        &:after {
+          display: none;
+        }
+      }
+    }
+  }
+}
