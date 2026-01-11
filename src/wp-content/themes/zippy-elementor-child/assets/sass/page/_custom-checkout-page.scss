@@ -1,0 +1,30 @@
+.woocommerce {
+  .shop_table {
+    th {
+      color: var(--e-global-color-text) !important;
+    }
+    .woocommerce-Price-amount {
+      color: var(--e-global-color-text) !important;
+      bdi {
+        color: var(--e-global-color-text) !important;
+      }
+    }
+  }
+  tbody {
+    .cart_item {
+      td {
+        color: var(--e-global-color-text) !important;
+      }
+    }
+  }
+}
+.woocommerce-checkout-payment {
+  .place-order {
+    #place_order {
+      background-color: var(--e-global-color-primary);
+      color: white;
+      border-radius: 8px !important;
+      padding: 10px 20px !important;
+    }
+  }
+}
