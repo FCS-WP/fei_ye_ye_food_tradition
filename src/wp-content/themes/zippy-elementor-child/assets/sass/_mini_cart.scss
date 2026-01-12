@@ -1,0 +1,112 @@
+.spb-cart-wrapper {
+  position: relative;
+
+  /* Icon */
+  .spb-cart-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    font-size: 24px;
+
+    .spb-cart-badge {
+      position: absolute;
+      top: -2px;
+      right: -5px;
+      background: var(--e-global-color-primary);
+      color: #fff;
+      font-size: 12px;
+      padding: 0px 6px;
+      border-radius: 50%;
+      line-height: 1;
+      min-width: 18px;
+      text-align: center;
+    }
+    &:hover,
+    &:focus,
+    &:active {
+      background: transparent !important;
+    }
+  }
+
+  /* Overlay */
+  .spb-cart-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 998;
+
+    &.open {
+      display: block;
+    }
+  }
+
+  /* Panel */
+  .spb-cart-panel {
+    position: fixed;
+    top: 0;
+    right: -450px;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    z-index: 999;
+    padding: 20px;
+    overflow-y: auto;
+    transition: right 0.3s ease;
+    @include desktop {
+      width: 430px;
+    }
+
+    &.open {
+      right: 0;
+      z-index: 999999;
+    }
+
+    .spb-cart-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+    .spb-cart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      margin-top: 20px;
+      h3 {
+        font-size: 18px;
+        font-weight: 500;
+        margin: 0;
+      }
+    }
+    .elementor-menu-cart__product-name {
+      font-size: 16px !important;
+    }
+    .elementor-menu-cart__subtotal {
+      border: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .spb-cart-close {
+      font-size: 24px;
+      color: #000;
+      &:hover {
+        color: var(--e-global-color-primary);
+      }
+    }
+    .variation-PickUpDate,
+    .variation-Add-on {
+      font-size: 12px;
+      font-weight: bold;
+      margin: 0 5px 0 0 !important;
+    }
+    .elementor-menu-cart__product {
+      padding-right: 15px !important;
+    }
+  }
+}
