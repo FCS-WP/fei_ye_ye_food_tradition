@@ -3,6 +3,9 @@
     form {
       &.cart {
         display: block !important;
+        .quantity{
+          height: 46px;
+        }
       }
     }
   }
@@ -19,19 +22,18 @@
 }
 .spb-booking-box {
   border: 1px solid #e5e5e5;
-  padding: 20px;
+  padding: 10px 20px;
   margin-bottom: 20px;
   border-radius: 8px;
   background: #fafafa;
 }
 .spb-booking-box .spb-title {
   font-size: 18px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 .spb-booking-box .spb-fixed-info {
   display: flex;
   gap: 30px;
-  margin-bottom: 20px;
   font-size: 14px;
 }
 .spb-booking-box .spb-section {

@@ -23,8 +23,17 @@ add_action('wp_enqueue_scripts', function () {
 
 /* 2. FRONTEND BOOKING UI */
 add_action('woocommerce_before_add_to_cart_button', function () {
+
     ob_start();
-?>
+
+    // Query add-on products
+    $addon_products = wc_get_products([
+        'status'   => 'publish',
+        'limit'    => -1,
+        'category' => ['add-ons'],
+    ]);
+    ?>
+
     <div class="spb-booking-box">
 
         <h3 class="spb-title">Store Pick Up</h3>
@@ -49,34 +58,36 @@ add_action('woocommerce_before_add_to_cart_button', function () {
             </small>
         </div>
 
-        <div class="spb-section">
-            <label class="spb-label">Add-ons</label>
+        <?php if (!empty($addon_products)) : ?>
+            <div class="spb-section">
+                <label class="spb-label">Add-ons</label>
 
-            <label class="spb-addon">
-                <input type="checkbox" name="addons[]" value="Extra Sauce">
-                Extra Sauce
-            </label>
+                <?php foreach ($addon_products as $addon) : ?>
+                    <label class="spb-addon">
+                        <input
+                            type="checkbox"
+                            name="addons[]"
+                            value="<?php echo esc_attr($addon->get_id()); ?>"
+                        >
+                        <?php echo esc_html($addon->get_name()); ?>
+                        <span class="spb-addon-price">
+                            (+<?php echo wc_price($addon->get_price()); ?>)
+                        </span>
+                    </label>
+                <?php endforeach; ?>
 
-            <label class="spb-addon">
-                <input type="checkbox" name="addons[]" value="Gift Packaging">
-                Gift Packaging
-            </label>
-
-            <label class="spb-addon">
-                <input type="checkbox" name="addons[]" value="Cutlery Set">
-                Cutlery Set
-            </label>
-
-            <p class="spb-walkin-note">
-                *Items are still available for same day walk-in purchase
-            </p>
-        </div>
+                <p class="spb-walkin-note">
+                    *Items are still available for same day walk-in purchase
+                </p>
+            </div>
+        <?php endif; ?>
 
     </div>
 
-<?php
+    <?php
     echo ob_get_clean();
 });
+
 
 /*3. VALIDATION */
 add_filter('woocommerce_add_to_cart_validation', function ($passed) {
