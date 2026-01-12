@@ -10,12 +10,14 @@
   .added_to_cart.wc-forward {
     display: none !important;
   }
-  .button.product_type_simple.add_to_cart_button.ajax_add_to_cart {
+  .button.product_type_simple.add_to_cart_button.ajax_add_to_cart,
+  .button.product_type_variable.add_to_cart_button {
     font-size: 14px;
     display: block;
     width: 100%;
   }
-  .e-loop-add-to-cart-form{
+
+  .e-loop-add-to-cart-form {
     width: 100%;
   }
 }
