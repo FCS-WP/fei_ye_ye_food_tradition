@@ -7,6 +7,11 @@
           height: 46px;
         }
       }
+      &.variations_form {
+        .woocommerce-variation-add-to-cart {
+          display: block !important;
+        }
+      }
     }
   }
 }
