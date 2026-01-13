@@ -18,4 +18,15 @@ jQuery(function ($) {
     $(".spb-cart-panel").removeClass("open");
     $(".spb-cart-overlay").removeClass("open");
   });
+
+  // Add on Quantity
+  $(document).on("change", ".spb-addon input[type='checkbox']", function () {
+    const qty_input = $(this).closest(".spb-addon").find(".spb-addon-qty");
+    if ($(this).is(":checked")) {
+      qty_input.show();
+      if (!qty_input.val()) qty_input.val(1);
+    } else {
+      qty_input.hide().val("");
+    }
+  });
 });

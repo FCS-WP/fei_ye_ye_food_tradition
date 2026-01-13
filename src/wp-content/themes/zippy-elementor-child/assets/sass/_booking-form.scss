@@ -3,7 +3,7 @@
     form {
       &.cart {
         display: block !important;
-        .quantity{
+        .quantity {
           height: 46px;
         }
       }
@@ -34,13 +34,15 @@
   background: #fafafa;
 }
 .spb-booking-box .spb-title {
-  font-size: 18px;
+  font-size: 20px;
   margin-bottom: 10px;
+  color: var(--e-global-color-primary);
+  font-weight: 600;
 }
 .spb-booking-box .spb-fixed-info {
   display: flex;
   gap: 30px;
-  font-size: 14px;
+  font-size: 16px;
 }
 .spb-booking-box .spb-section {
   margin-bottom: 20px;
@@ -49,6 +51,7 @@
   font-weight: 600;
   margin-bottom: 8px;
   display: block;
+  color: var(--e-global-color-primary);
 }
 .spb-booking-box #pickup_date {
   width: 100%;
@@ -57,7 +60,7 @@
   border: 1px solid #ccc;
 }
 .spb-booking-box .spb-note {
-  font-size: 12px;
+  font-size: 14px;
   color: #777;
   margin-top: 6px;
   display: block;
@@ -65,10 +68,20 @@
 .spb-booking-box .spb-addon {
   display: block;
   margin-bottom: 8px;
-  font-size: 14px;
+  font-size: 16px;
+  white-space: nowrap;
+  .spb-addon-qty {
+    margin-left: 20px;
+    width: 80px;
+    display: none;
+    &:focus,
+    &:focus-visible {
+      outline: none;
+    }
+  }
 }
 .spb-booking-box .spb-walkin-note {
-  font-size: 12px;
+  font-size: 14px;
   font-style: italic;
   color: #666;
   margin-top: 10px;
