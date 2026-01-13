@@ -71,7 +71,7 @@ add_action('woocommerce_before_add_to_cart_button', function () {
             <span class="spb-addon-price">
                 (+<?php echo wc_price($addon->get_price()); ?>)
             </span>
-            <input class="spb-addon-qty" name="addons_qty[]" type="number" min=1>
+            <input class="spb-addon-qty" name="addons_qty[]" type="number" min=1 max=2>
         </label>
         <?php endforeach; ?>
     </div>
