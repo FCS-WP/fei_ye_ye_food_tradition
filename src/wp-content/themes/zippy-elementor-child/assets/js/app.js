@@ -1,5 +1,5 @@
 import "./spb-flatpickr";
 import "./minicart";
+import "./ajax";
 
-$(document).ready(function ($) {
-});
+$(document).ready(function ($) {});
