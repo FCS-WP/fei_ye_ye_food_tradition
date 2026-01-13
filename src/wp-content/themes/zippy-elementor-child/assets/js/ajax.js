@@ -1,80 +1,81 @@
-$(document).ready(function ($) {
-  // Define Variable
-  const variation_form = $(".variations_form");
+jQuery(function ($) {
+  /* ========================
+   * Cached selectors
+   * ======================== */
+  const $variationForm = $(".variations_form");
+  if (!$variationForm.length) return;
 
-  // Event
-  let attr_name = $(".variations_form select").attr("id"),
-    product_id = variation_form.data("product_id");
+  const $variationSelects = $variationForm.find("select");
+  const productId = $variationForm.data("product_id");
+  const attrName = $variationSelects.first().attr("id");
 
-  /* Ajax for checking stock for add ons products */
-  $.ajax({
-    url: "/wp-admin/admin-ajax.php",
-    type: "POST",
-    data: {
-      action: "get_stock_addons_product",
-    },
-    success: function (res) {
-      if (!res.success) return;
-      res.data.forEach(function (item) {
-        if (!item.is_in_stock) {
-          const addon = $(
-            '.spb-addon[data-product-id="' + item.product_id + '"]'
-          );
-          addon.find("input").prop("disabled", true);
-          addon.addClass("is-out-of-stock");
-        }
+  /* ========================
+   * Helpers
+   * ======================== */
+  const addLoading = () => {
+    $(".elementor-add-to-cart").addClass("c_loader");
+    $variationSelects.prop("disabled", true);
+  };
+
+  const hideLoading = () => {
+    $(".elementor-add-to-cart").removeClass("c_loader");
+    $variationSelects.prop("disabled", false);
+  };
+
+  const disableOutOfStockAddons = (addons) => {
+    addons.forEach(({ product_id, is_in_stock }) => {
+      if (is_in_stock) return;
+
+      const $addon = $(`.spb-addon[data-product-id="${product_id}"]`);
+      $addon.addClass("is-out-of-stock").find("input").prop("disabled", true);
+    });
+  };
+
+  const disableUnavailableVariations = (variations, filterAttr) => {
+    variations.forEach(({ is_in_stock, attributes }) => {
+      if (is_in_stock) return;
+
+      $.each(attributes, (key, value) => {
+        if (key !== filterAttr) return;
+
+        $variationForm
+          .find(`select#${key} option[value="${value}"]`)
+          .prop("disabled", true);
       });
-    },
+    });
+  };
+
+  /* ========================
+   * Init
+   * ======================== */
+  addLoading();
+
+  /* ========================
+   * AJAX – Add-ons stock
+   * ======================== */
+  $.post("/wp-admin/admin-ajax.php", {
+    action: "get_stock_addons_product",
+  }).done((res) => {
+    if (!res?.success) return;
+    disableOutOfStockAddons(res.data);
   });
 
+  /* ========================
+   * AJAX – Variations by attribute
+   * ======================== */
   $.ajax({
     url: "/wp-admin/admin-ajax.php",
     type: "GET",
     data: {
       action: "get_variations_by_attribute",
-      product_id: product_id,
-      attribute: attr_name,
+      product_id: productId,
+      attribute: attrName,
     },
-
-    success: function (response) {
-      if (response.success) {
-        getAvailableOptions(response.data, attr_name);
-      } else {
-        console.log(response.data);
-      }
-      hideLoading();
-    },
-    error: function (error) {
-      console.log(error);
-      hideLoading();
-    },
-  });
-
-  // Function
-  function getAvailableOptions(variations, filter) {
-    variations.forEach((item) => {
-      if (!item.is_in_stock) {
-        $.each(item.attributes, function (key, value) {
-          if (key == filter) {
-            $(`.variations_form select#${key} option[value="${value}"]`).attr(
-              "disabled",
-              "disabled"
-            );
-          }
-        });
-      }
-    });
-  }
-  // Loading
-  function addLoading() {
-    $(".elementor-add-to-cart").addClass("c_loader");
-    variation_form.find("select").prop("disabled", true);
-  }
-
-  function hideLoading() {
-    $(".elementor-add-to-cart").removeClass("c_loader");
-    variation_form.find("select").prop("disabled", false);
-  }
+  })
+    .done((res) => {
+      if (!res?.success) return console.log(res.data);
+      disableUnavailableVariations(res.data, attrName);
+    })
+    .fail((err) => console.error(err))
+    .always(hideLoading);
 });
-
-// $(`.variations_form select option`).removeAttr("disabled");
