@@ -233,14 +233,31 @@ add_action('woocommerce_thankyou', function ($order_id) {
     if (!$order_id) return;
 
     $order = wc_get_order($order_id);
+    if (!$order) return;
+
+    $order_number = $order->get_order_number();
+    $pickup_date  = $order->get_meta('_pickup_date');
 
     echo '<h3>Pick Up Information</h3>';
-    echo '<p><strong>Location: </strong>Chinatown Complex 335 Smith St, #02-177, Singapore 050335</p>';
-    echo '<p><strong>Available Time: </strong> 9AM – 8PM </p>';
-    $pickup_date = $order->get_meta('_pickup_date');
+
+    echo '<p><strong>Location:</strong><br>
+        Chinatown Complex 335 Smith St, #02-177, Singapore 050335
+    </p>';
+
+    echo '<p><strong>Available Time:</strong><br>
+        9AM – 8PM
+    </p>';
+
     if ($pickup_date) {
-        echo '<p><strong>Pick Up Date:</strong> ' .  $pickup_date . '</p>';
+        echo '<p><strong>Pick Up Date:</strong><br>' . esc_html($pickup_date) . '</p>';
     }
+    echo '<hr style="margin:16px 0;">';
+
+    echo '<p><strong>Order Number:</strong> #' . esc_html($order_number) . '</p>';
+
+    echo '<p style="margin-top:12px;">
+        Thank you for your order! We look forward to seeing you.
+    </p>';
 }, 20);
 
 /* 8. SHOW IN EMAIL */
@@ -260,14 +277,17 @@ function show_pickup_date_under_billing_in_email($order, $sent_to_admin, $plain_
 ?>
 <table cellspacing="0" cellpadding="0" style="width:100%; margin-top:12px;">
     <tr>
-        <td style="padding:0;">
-            <h3 style="margin:0 0 6px;">Pick Up</h3>
-            <p style="margin:0;">
-                <strong>Pick Up Date:</strong><br>
-                <?php echo esc_html($pickup_date); ?>
-            </p>
+        <td style="padding:0; vertical-align:top;">
+            <h3 style="margin:0 0 6px;">Location</h3>
+            Chinatown Complex 335 Smith St, #02-177, Singapore 050335
+        </td>
+        <td style="padding:0; vertical-align:top;">
+            <h3 style="margin:0 0 6px;">Pick Up Date</h3>
+
+            <?php echo esc_html($pickup_date); ?>
         </td>
     </tr>
 </table>
+
 <?php
 }
