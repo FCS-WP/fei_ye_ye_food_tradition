@@ -90,3 +90,31 @@ add_filter('woocommerce_checkout_fields', function ($fields) {
 
     return $fields;
 });
+
+
+add_action("woocommerce_checkout_before_customer_details", "parse_pickup_form");
+function parse_pickup_form()
+{
+?>
+<h3 class="spb-title">Store</h3>
+
+<div class="spb-fixed-info">
+    <p>
+        <strong>Location</strong><br>
+        Chinatown Complex<br>
+        335 Smith St, #02-177, Singapore 050335
+    </p>
+    <p>
+        <strong>Pick up time</strong><br>
+        9AM – 8PM
+    </p>
+</div>
+<div class="spb-section">
+    <h3 class="spb-label">Pick up date</h3>
+    <input type="text" id="pickup_date" name="pickup_date" placeholder="Select date" required>
+    <small class="spb-note">
+        *All orders must be made 1 day in advance
+    </small>
+</div>
+<?php
+}
