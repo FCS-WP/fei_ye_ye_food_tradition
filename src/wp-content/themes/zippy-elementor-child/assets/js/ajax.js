@@ -3,16 +3,18 @@ jQuery(function ($) {
    * Cached selectors
    * ======================== */
   const $variationForm = $(".variations_form");
+  const $singleProductPage = $("#single-product-block");
   if (!$variationForm.length) return;
 
   const $variationSelects = $variationForm.find("select");
   const productId = $variationForm.data("product_id");
   const attrName = $variationSelects.first().attr("id");
+  const qtyProduct = $singleProductPage.find(".input-text");
 
   /* ========================
    * Events
    * ======================== */
-  $("body").on("change", ".variations_form select", function (e) {
+  $("body").on("change", $(".variations_form select"), function (e) {
     addLoading();
     $.ajax({
       url: "/wp-admin/admin-ajax.php",
@@ -31,6 +33,11 @@ jQuery(function ($) {
       .always(hideLoading);
   });
 
+  $("body").on("change", "#single-product-block .input-text", function (e) {
+    let val = $(this).val();
+
+    $(".spb-addon-qty").attr("max", val * 2);
+  });
   /* ========================
    * Helpers
    * ======================== */

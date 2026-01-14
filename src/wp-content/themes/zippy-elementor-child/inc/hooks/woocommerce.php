@@ -87,7 +87,10 @@ add_filter('woocommerce_checkout_fields', function ($fields) {
             unset($fields['billing'][$key]);
         }
     }
-
+    if (isset($fields['billing']['billing_phone'])) {
+        $fields['billing']['billing_phone']['required'] = true;
+        $fields['billing']['billing_phone']['label'] = __('Phone');
+    }
     return $fields;
 });
 
