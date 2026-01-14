@@ -111,24 +111,9 @@ add_filter('woocommerce_widget_cart_item_quantity', function ($html, $cart_item,
 
     if (empty($cart_item['addons'])) return $html;
 
-    $qty = max(1, (int) $cart_item['quantity']);
 
-    // $base = (float) $cart_item['data']->get_regular_price();
-    // if ($cart_item['data']->is_on_sale()) {
-    //     $base = (float) $cart_item['data']->get_sale_price();
-    // }
 
-    // $addon_total = 0;
-    // foreach ($cart_item['addons'] as $addon_id => $addon_qty) {
-    //     $addon = wc_get_product($addon_id);
-    //     if ($addon && $addon_qty > 0) {
-    //         $addon_total += (float) $addon->get_price() * (int) $addon_qty;
-    //     }
-    // }
-
-    // $final_price = $base + ($addon_total / $qty);
-
-    return sprintf('x %d ', $qty);
+    return "";
 }, 10, 3);
 
 
@@ -174,7 +159,10 @@ add_filter(
 
 /* 5. DISPLAY CART / CHECKOUT */
 add_filter('woocommerce_get_item_data', function ($item_data, $cart_item) {
-
+    // $item_data[] = [
+    //     'name' => '',
+    //     'value' => '123'
+    // ];
     if (!empty($cart_item['addons'])) {
 
         foreach ($cart_item['addons'] as $addon_id => $addon_qty) {
@@ -184,7 +172,7 @@ add_filter('woocommerce_get_item_data', function ($item_data, $cart_item) {
 
             $item_data[] = [
                 'name'  => 'Add-on',
-                'value' => $addon->get_name() . ' (' . wc_price($addon->get_price()) . ')' . ' - ' . intval($addon_qty)
+                'value' => $addon->get_name() . ' (' . wc_price($addon->get_price()) . ')' . ' x ' . intval($addon_qty)
             ];
         }
     }
@@ -247,14 +235,11 @@ add_action('woocommerce_thankyou', function ($order_id) {
     $order = wc_get_order($order_id);
 
     echo '<h3>Pick Up Information</h3>';
+    echo '<p><strong>Location: </strong>Chinatown Complex 335 Smith St, #02-177, Singapore 050335</p>';
+    echo '<p><strong>Available Time: </strong> 9AM – 8PM </p>';
     $pickup_date = $order->get_meta('_pickup_date');
     if ($pickup_date) {
         echo '<p><strong>Pick Up Date:</strong> ' .  $pickup_date . '</p>';
-    }
-
-    foreach ($order->get_items() as $item) {
-
-        echo '<p><strong>Add-ons:</strong> ' . wp_kses_post($item->get_meta('Add-ons')) . '</p>';
     }
 }, 20);
 
