@@ -58,7 +58,8 @@ add_action('woocommerce_before_add_to_cart_button', function () {
         </small>
     </div>
     <p class="spb-walkin-note">
-        *Items are still available for same day walk-in purchase
+        *Items are still available for same day walk-in purchase.</br>
+        *Each add-on product can be selected up to 2 times.
     </p>
     <?php if (!empty($addon_products)) : ?>
     <div class="spb-section">
@@ -268,7 +269,7 @@ add_action('woocommerce_thankyou', function ($order_id) {
 
     foreach ($order->get_items() as $item) {
         echo '<p><strong>Pick Up Date:</strong> ' . esc_html($item->get_meta('Pick Up Date')) . '</p>';
-        echo '<p><strong>Add-ons:</strong> ' . esc_html($item->get_meta('Add-ons')) . '</p>';
+        echo '<p><strong>Add-ons:</strong> ' . wp_kses_post($item->get_meta('Add-ons')) . '</p>';
     }
 }, 20);
 
