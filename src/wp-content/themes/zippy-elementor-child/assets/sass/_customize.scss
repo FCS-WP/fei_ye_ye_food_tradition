@@ -13,6 +13,21 @@
     margin-bottom: 20px;
   }
 }
+#single-product-block {
+  .woocommerce-variation-add-to-cart {
+    display: flex !important;
+    flex-direction: column;
+    .spb-booking-box {
+      order: 2;
+    }
+    .quantity {
+      order: 1;
+    }
+    .single_add_to_cart_button {
+      order: 3;
+    }
+  }
+}
 .c_loader {
   position: relative;
   z-index: 999;

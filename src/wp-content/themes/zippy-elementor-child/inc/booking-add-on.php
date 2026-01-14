@@ -37,7 +37,7 @@ add_action('woocommerce_before_add_to_cart_button', function () {
 
     <p class="spb-walkin-note">
         *Items are still available for same day walk-in purchase.</br>
-        *Each add-on product can be selected up to 2 times.
+        *Limited to a max of 2 quantities for each add-ons per Yusheng set.
     </p>
     <?php if (!empty($addon_products)) : ?>
     <div class="spb-section">
