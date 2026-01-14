@@ -111,24 +111,24 @@ add_filter('woocommerce_widget_cart_item_quantity', function ($html, $cart_item,
 
     if (empty($cart_item['addons'])) return $html;
 
-    $qty = (int) $cart_item['quantity'];
+    $qty = max(1, (int) $cart_item['quantity']);
 
-    $base = (float) $cart_item['data']->get_regular_price();
-    if ($cart_item['data']->is_on_sale()) {
-        $base = (float) $cart_item['data']->get_sale_price();
-    }
+    // $base = (float) $cart_item['data']->get_regular_price();
+    // if ($cart_item['data']->is_on_sale()) {
+    //     $base = (float) $cart_item['data']->get_sale_price();
+    // }
 
-    $addon_total = 0;
-    foreach ($cart_item['addons'] as $addon_id => $addon_qty) {
-        $addon = wc_get_product($addon_id);
-        if ($addon && $addon_qty > 0) {
-            $addon_total += (float) $addon->get_price() * (int) $addon_qty;
-        }
-    }
+    // $addon_total = 0;
+    // foreach ($cart_item['addons'] as $addon_id => $addon_qty) {
+    //     $addon = wc_get_product($addon_id);
+    //     if ($addon && $addon_qty > 0) {
+    //         $addon_total += (float) $addon->get_price() * (int) $addon_qty;
+    //     }
+    // }
 
-    $final_price = $base + $addon_total;
+    // $final_price = $base + ($addon_total / $qty);
 
-    return sprintf('%d × %s', $qty, wc_price($final_price));
+    return sprintf('x %d ', $qty);
 }, 10, 3);
 
 
@@ -137,28 +137,21 @@ add_action('woocommerce_before_calculate_totals', function ($cart) {
     if (is_admin() && !defined('DOING_AJAX')) return;
     $final = 0;
     foreach ($cart->get_cart() as $cart_item) {
-
         if (empty($cart_item['addons'])) continue;
-
+        $qty     = max(1, (int) $cart_item['quantity']);
         // Save base price once
         if (!isset($cart_item['base_price'])) {
             $cart_item['base_price'] = $cart_item['data']->get_regular_price();
         }
-
         $addon_total = 0;
-
         foreach ($cart_item['addons'] as $addon_id => $addon_qty) {
             $addon = wc_get_product($addon_id);
             if ($addon) {
                 $addon_total += (float) $addon->get_price() * (int)$addon_qty;
             }
         }
-
-        $final_price = $cart_item['base_price'] + $addon_total;
-        $final = $final + $final_price;
-        // SET PRICE
+        $final_price = $cart_item['base_price'] + ($addon_total / $qty);
         $cart_item['data']->set_price($final_price);
-
         // SAVE FINAL PRICE FOR MINI CART
         $cart_item['addon_price_total'] = $addon_total;
     }
@@ -293,12 +286,3 @@ function show_pickup_date_under_billing_in_email($order, $sent_to_admin, $plain_
 </table>
 <?php
 }
-
-/* DEBUG */
-// add_action('woocommerce_before_cart', 'wp_kama_woocommerce_before_cart_action');
-// function wp_kama_woocommerce_before_cart_action()
-// {
-//     $cart = WC()->cart->get_cart();
-//     pr($cart);
-//     die;
-// }
