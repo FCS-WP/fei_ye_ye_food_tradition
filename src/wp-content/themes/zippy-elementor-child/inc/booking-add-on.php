@@ -238,7 +238,6 @@ function display_pickup_date_in_order($order)
     if (empty($pickup_date)) return;
 ?>
 <div class="order_data_column">
-    <h3>Pickup Date</h3>
     <p>
         <strong>Pick Up Date:</strong><br>
         <?php echo esc_html($pickup_date); ?>
@@ -286,7 +285,7 @@ function show_pickup_date_under_billing_in_email($order, $sent_to_admin, $plain_
         <td style="padding:0;">
             <h3 style="margin:0 0 6px;">Pick Up</h3>
             <p style="margin:0;">
-                <strong style="color:#fff">Pick Up Date:</strong><br>
+                <strong>Pick Up Date:</strong><br>
                 <?php echo esc_html($pickup_date); ?>
             </p>
         </td>
