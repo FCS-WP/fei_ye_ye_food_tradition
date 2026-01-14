@@ -10,6 +10,28 @@ jQuery(function ($) {
   const attrName = $variationSelects.first().attr("id");
 
   /* ========================
+   * Events
+   * ======================== */
+  $("body").on("change", ".variations_form select", function (e) {
+    addLoading();
+    $.ajax({
+      url: "/wp-admin/admin-ajax.php",
+      type: "GET",
+      data: {
+        action: "get_variations_by_attribute",
+        product_id: productId,
+        attribute: attrName,
+      },
+    })
+      .done((res) => {
+        if (!res?.success) return console.log(res.data);
+        disableUnavailableVariations(res.data, attrName);
+      })
+      .fail((err) => console.error(err))
+      .always(hideLoading);
+  });
+
+  /* ========================
    * Helpers
    * ======================== */
   const addLoading = () => {

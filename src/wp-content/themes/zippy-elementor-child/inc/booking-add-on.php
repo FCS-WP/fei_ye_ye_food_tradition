@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) exit;
 /* 1. ENQUEUE CSS & JS*/
 add_action('wp_enqueue_scripts', function () {
 
-    if (!is_product()) return;
+    if (!is_checkout()) return;
     // Flatpickr
     wp_enqueue_style(
         'flatpickr-css',
@@ -28,7 +28,6 @@ add_action('woocommerce_before_add_to_cart_button', function () {
 
     // Query add-on products
     $addon_products = wc_get_products([
-        'status'   => 'publish',
         'limit'    => -1,
         'category' => ['add-ons'],
     ]);
@@ -36,27 +35,6 @@ add_action('woocommerce_before_add_to_cart_button', function () {
 
 <div class="spb-booking-box">
 
-    <h3 class="spb-title">Store Pick Up</h3>
-
-    <div class="spb-fixed-info">
-        <p>
-            <strong>Location</strong><br>
-            Chinatown Complex<br>
-            335 Smith St, #02-177, Singapore 050335
-        </p>
-        <p>
-            <strong>Pick Up Time</strong><br>
-            9AM – 8PM
-        </p>
-    </div>
-
-    <div class="spb-section">
-        <label class="spb-label">Pick Up Date</label>
-        <input type="text" id="pickup_date" name="pickup_date" placeholder="Select date" required>
-        <small class="spb-note">
-            *All orders must be made 1 day in advance
-        </small>
-    </div>
     <p class="spb-walkin-note">
         *Items are still available for same day walk-in purchase.</br>
         *Each add-on product can be selected up to 2 times.
@@ -67,6 +45,11 @@ add_action('woocommerce_before_add_to_cart_button', function () {
 
         <?php foreach ($addon_products as $addon) : ?>
         <label class="spb-addon" data-product-id="<?php echo esc_attr($addon->get_id()); ?>">
+            <?php
+                        $image_id  = $addon->get_image_id();
+                        $image_url = wp_get_attachment_url($image_id);
+                        ?>
+            <img src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr($addon->get_name()); ?>">
             <input type="checkbox" name="addons[]" value="<?php echo esc_attr($addon->get_id()); ?>">
             <?php echo esc_html($addon->get_name()); ?>
             <span class="spb-addon-price">
@@ -85,12 +68,10 @@ add_action('woocommerce_before_add_to_cart_button', function () {
 
 
 /*3. VALIDATION */
-add_filter('woocommerce_add_to_cart_validation', function ($passed) {
+add_action('woocommerce_checkout_process', function () {
     if (empty($_POST['pickup_date'])) {
         wc_add_notice('Please select a pick up date.', 'error');
-        return false;
     }
-    return $passed;
 });
 
 /* 4. SAVE DATA TO CART */
@@ -99,10 +80,6 @@ add_filter('woocommerce_add_cart_item_data', function ($cart_item_data) {
     if (!empty($_POST['pickup_date'])) {
         $cart_item_data['pickup_date'] = sanitize_text_field($_POST['pickup_date']);
     }
-
-    // if (!empty($_POST['addons'])) {
-    //     $cart_item_data['addons'] = array_map('sanitize_text_field', $_POST['addons']);
-    // }
 
     if (!empty($_POST['addons_qty']) && !empty($_POST['addons'])) {
         $raw_qty_list = array_map('sanitize_text_field', $_POST['addons_qty']);
@@ -117,7 +94,6 @@ add_filter('woocommerce_add_cart_item_data', function ($cart_item_data) {
 add_filter(
     'woocommerce_get_cart_item_from_session',
     function ($cart_item, $values) {
-        // pr($cart_item);
         if (isset($values['base_price'])) {
             $cart_item['base_price'] = $values['base_price'];
         }
@@ -203,17 +179,8 @@ add_filter(
     3
 );
 
-
-
 /* 5. DISPLAY CART / CHECKOUT */
 add_filter('woocommerce_get_item_data', function ($item_data, $cart_item) {
-
-    if (!empty($cart_item['pickup_date'])) {
-        $item_data[] = [
-            'name'  => 'Pick Up Date',
-            'value' => esc_html($cart_item['pickup_date'])
-        ];
-    }
 
     if (!empty($cart_item['addons'])) {
 
@@ -236,10 +203,6 @@ add_filter('woocommerce_get_item_data', function ($item_data, $cart_item) {
 /* 6. SAVE TO ORDER (ADMIN) */
 add_action('woocommerce_checkout_create_order_line_item', function ($item, $cart_item_key, $values) {
 
-    if (!empty($values['pickup_date'])) {
-        $item->add_meta_data('Pick Up Date', $values['pickup_date'], true);
-    }
-
     if (!empty($values['addons']) && is_array($values['addons'])) {
 
         $addons = [];
@@ -257,7 +220,33 @@ add_action('woocommerce_checkout_create_order_line_item', function ($item, $cart
     }
 }, 10, 3);
 
+/* 6.1 SAVE PICKUP DATE TO ORDER AND SHOW (ADMIN) */
+add_action('woocommerce_checkout_create_order', 'save_pickup_date_to_order_meta', 20, 2);
+function save_pickup_date_to_order_meta($order, $data)
+{
+    if (isset($_POST['pickup_date']) && !empty($_POST['pickup_date'])) {
+        $order->update_meta_data(
+            '_pickup_date',
+            sanitize_text_field($_POST['pickup_date'])
+        );
+    }
+}
+add_action("woocommerce_admin_order_data_after_billing_address", 'display_pickup_date_in_order');
+function display_pickup_date_in_order($order)
+{
+    $pickup_date = $order->get_meta('_pickup_date');
+    if (empty($pickup_date)) return;
+?>
+<div class="order_data_column">
+    <h3>Pickup Date</h3>
+    <p>
+        <strong>Pick Up Date:</strong><br>
+        <?php echo esc_html($pickup_date); ?>
+    </p>
+</div>
+<?php
 
+}
 /* 7. THANK YOU PAGE */
 add_action('woocommerce_thankyou', function ($order_id) {
 
@@ -266,12 +255,45 @@ add_action('woocommerce_thankyou', function ($order_id) {
     $order = wc_get_order($order_id);
 
     echo '<h3>Pick Up Information</h3>';
+    $pickup_date = $order->get_meta('_pickup_date');
+    if ($pickup_date) {
+        echo '<p><strong>Pick Up Date:</strong> ' .  $pickup_date . '</p>';
+    }
 
     foreach ($order->get_items() as $item) {
-        echo '<p><strong>Pick Up Date:</strong> ' . esc_html($item->get_meta('Pick Up Date')) . '</p>';
+
         echo '<p><strong>Add-ons:</strong> ' . wp_kses_post($item->get_meta('Add-ons')) . '</p>';
     }
 }, 20);
+
+/* 8. SHOW IN EMAIL */
+add_action(
+    'woocommerce_email_customer_details',
+    'show_pickup_date_under_billing_in_email',
+    20,
+    4
+);
+function show_pickup_date_under_billing_in_email($order, $sent_to_admin, $plain_text, $email)
+{
+    $pickup_date = $order->get_meta('_pickup_date');
+
+    if (empty($pickup_date)) return;
+
+    if ($plain_text) return;
+?>
+<table cellspacing="0" cellpadding="0" style="width:100%; margin-top:12px;">
+    <tr>
+        <td style="padding:0;">
+            <h3 style="margin:0 0 6px;">Pick Up</h3>
+            <p style="margin:0;">
+                <strong style="color:#fff">Pick Up Date:</strong><br>
+                <?php echo esc_html($pickup_date); ?>
+            </p>
+        </td>
+    </tr>
+</table>
+<?php
+}
 
 /* DEBUG */
 // add_action('woocommerce_before_cart', 'wp_kama_woocommerce_before_cart_action');

@@ -66,9 +66,11 @@
   display: block;
 }
 .spb-booking-box .spb-addon {
-  display: block;
+  display: flex;
   margin-bottom: 8px;
   font-size: 16px;
+  align-items: center;
+  gap: 12px;
   .spb-addon-qty {
     margin-top: 15px;
     margin-left: 20px;
@@ -78,6 +80,9 @@
     &:focus-visible {
       outline: none;
     }
+  }
+  img {
+    width: 45px;
   }
 }
 .spb-booking-box .spb-walkin-note {
