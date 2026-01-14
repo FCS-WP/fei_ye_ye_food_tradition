@@ -97,12 +97,12 @@ do_action('woocommerce_before_cart'); ?>
                                     ?>
                                 </ul>
 
-                                <div class="ctc product-price">
+                                <!-- <div class="ctc product-price">
                                     <?php
                                     echo '<span class="d-md-none">Price: </span>';
                                     echo apply_filters('woocommerce_cart_item_price', WC()->cart->get_product_price($_product), $cart_item, $cart_item_key); // PHPCS: XSS ok.
                                     ?>
-                                </div>
+                                </div> -->
                             </div>
 
 
