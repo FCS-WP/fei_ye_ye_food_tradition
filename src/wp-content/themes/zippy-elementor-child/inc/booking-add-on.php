@@ -115,10 +115,6 @@ add_filter(
 add_filter('woocommerce_widget_cart_item_quantity', function ($html, $cart_item, $cart_item_key) {
 
     if (empty($cart_item['addons'])) return $html;
-
-
-
-    return "";
 }, 10, 3);
 
 

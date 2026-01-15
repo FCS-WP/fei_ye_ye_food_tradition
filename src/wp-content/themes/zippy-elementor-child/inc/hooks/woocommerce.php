@@ -132,3 +132,30 @@ function show_base_price_of_product($price_html, $cart_item, $cart_item_key)
     $base_price = $cart_item['data']->get_regular_price();
     return wc_price($base_price);
 }
+
+add_filter(
+    'woocommerce_cart_item_name',
+    function ($name, $cart_item, $cart_item_key) {
+
+        if (!did_action('woocommerce_before_mini_cart')) {
+            return $name;
+        }
+
+        if (!isset($cart_item['data'])) {
+            return $name;
+        }
+        $_product = $cart_item['data'];
+        $parent_id = $_product->is_type('variation')
+            ? $_product->get_parent_id()
+            : $_product->get_id();
+        $base_name = get_the_title($parent_id);
+        $price     = wc_price($_product->get_price());
+        return sprintf(
+            '<span class="mini-cart-name">%s</span> - <span class="mini-cart-price">%s</span>',
+            esc_html($base_name),
+            $price
+        );
+    },
+    10,
+    3
+);
