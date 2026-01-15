@@ -32,6 +32,7 @@ do_action('woocommerce_before_cart'); ?>
                 <th class="product-name"><?php esc_html_e('Product', 'woocommerce'); ?></th>
                 <th class="product-price"><?php esc_html_e('Price', 'woocommerce'); ?></th>
                 <th class="product-quantity"><?php esc_html_e('Quantity', 'woocommerce'); ?></th>
+                <th class="product-addons"><?php esc_html_e('Add-ons', 'woocommerce'); ?></th>
                 <th class="product-subtotal"><?php esc_html_e('Subtotal', 'woocommerce'); ?></th>
             </tr>
         </thead>
@@ -54,7 +55,18 @@ do_action('woocommerce_before_cart'); ?>
 
                 if ($_product && $_product->exists() && $cart_item['quantity'] > 0 && apply_filters('woocommerce_cart_item_visible', true, $cart_item, $cart_item_key)) {
                     $product_permalink = apply_filters('woocommerce_cart_item_permalink', $_product->is_visible() ? $_product->get_permalink($cart_item) : '', $cart_item, $cart_item_key);
+                    $addon_total = 0;
+                    if (!empty($cart_item['addons']) && is_array($cart_item['addons'])) {
+                        foreach ($cart_item['addons'] as $addon_id => $addon_qty) {
+                            $addon_product = wc_get_product($addon_id);
+                            if ($addon_product) {
+                                $addon_total += (float) $addon_product->get_price() * (int) $addon_qty;
+                            }
+                        }
+                    }
+
             ?>
+
             <tr
                 class="woocommerce-cart-form__cart-item <?php echo esc_attr(apply_filters('woocommerce_cart_item_class', 'cart_item', $cart_item, $cart_item_key)); ?>">
 
@@ -110,13 +122,15 @@ do_action('woocommerce_before_cart'); ?>
                                  *
                                  * @since 2.1.0
                                  */
-                                echo wp_kses_post(apply_filters('woocommerce_cart_item_name', sprintf('<a href="%s">%s</a>', esc_url($product_permalink), $_product->get_name()), $cart_item, $cart_item_key));
+
+                                echo wp_kses_post(apply_filters('woocommerce_cart_item_name', sprintf('<a href="%s">%s - ( %s ) </a>', esc_url($product_permalink), $_product->get_name(), wc_price($_product->get_regular_price())), $cart_item, $cart_item_key));
                             }
 
                             do_action('woocommerce_after_cart_item_name', $cart_item, $cart_item_key);
 
                             // Meta data.
                             echo wc_get_formatted_cart_item_data($cart_item); // PHPCS: XSS ok.
+
 
                             // Backorder notification.
                             if ($_product->backorders_require_notification() && $_product->is_on_backorder($cart_item['quantity'])) {
@@ -156,6 +170,13 @@ do_action('woocommerce_before_cart'); ?>
                             echo apply_filters('woocommerce_cart_item_quantity', $product_quantity, $cart_item_key, $cart_item); // PHPCS: XSS ok.
                             ?>
                 </td>
+                <td class="product-addons" data-title="<?php esc_attr_e('Add-ons', 'woocommerce'); ?>">
+                    <?php
+                            echo $addon_total > 0
+                                ? wc_price($addon_total)
+                                : '&ndash;';
+                            ?>
+                </td>
 
                 <td class="product-subtotal" data-title="<?php esc_attr_e('Subtotal', 'woocommerce'); ?>">
                     <?php
@@ -171,7 +192,7 @@ do_action('woocommerce_before_cart'); ?>
             <?php do_action('woocommerce_cart_contents'); ?>
 
             <tr>
-                <td colspan="6" class="actions">
+                <td colspan="7" class="actions">
 
                     <?php if (wc_coupons_enabled()) { ?>
                     <div class="coupon">

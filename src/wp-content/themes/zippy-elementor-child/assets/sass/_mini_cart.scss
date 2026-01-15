@@ -44,6 +44,7 @@
 
   /* Panel */
   .spb-cart-panel {
+    font-family: var(--e-global-typography-primary-font-family);
     position: fixed;
     top: 0;
     right: -450px;
@@ -77,14 +78,16 @@
       justify-content: space-between;
       margin-bottom: 20px;
       margin-top: 20px;
+      color: var(--e-global-color-primary);
       h3 {
-        font-size: 18px;
+        font-size: 24px;
         font-weight: 500;
         margin: 0;
       }
     }
     .elementor-menu-cart__product-name {
       font-size: 16px !important;
+      font-weight: 600;
     }
     .elementor-menu-cart__subtotal {
       border: 0;
@@ -101,12 +104,17 @@
     }
     .variation-PickUpDate,
     .variation-Add-on {
-      font-size: 12px;
-      font-weight: bold;
+      font-size: 14px;
+      font-weight: 400;
       margin: 0 5px 0 0 !important;
     }
     .elementor-menu-cart__product {
       padding-right: 15px !important;
+    }
+    dl {
+      dt {
+        font-weight: 600 !important;
+      }
     }
   }
 }

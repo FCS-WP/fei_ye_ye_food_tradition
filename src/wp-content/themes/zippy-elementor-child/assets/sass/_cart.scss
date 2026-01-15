@@ -25,5 +25,15 @@
     .product-name a {
       color: var(--e-global-color-primary);
     }
+    .product-name {
+      bdi {
+        color: var(--e-global-color-primary) !important ;
+        font-weight: 700;
+        span {
+          font-weight: 700;
+          color: var(--e-global-color-primary);
+        }
+      }
+    }
   }
 }
