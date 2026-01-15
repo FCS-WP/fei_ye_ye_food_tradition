@@ -35,5 +35,23 @@
         }
       }
     }
+    table {
+      border: none !important;
+      @include tablet {
+        border: 1px solid gray;
+      }
+      tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        border: none;
+        @include tablet {
+          display: contents !important;
+        }
+        @include desktop {
+          display: contents !important;
+        }
+      }
+    }
   }
 }
