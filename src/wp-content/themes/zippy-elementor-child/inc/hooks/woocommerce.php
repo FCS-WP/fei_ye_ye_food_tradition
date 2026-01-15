@@ -61,14 +61,21 @@ add_filter(
 // Add information before payment
 add_action('woocommerce_review_order_before_payment', function () {
 ?>
-<div class="custom-checkout-warning">
-    <strong>Terms and conditions</strong>
-    <ul>
-        <li>No cancellation of order after payment </li>
-        <li>No change of date of collection </li>
-        <li>No refund for non collection of order. </li>
-    </ul>
-</div>
+    <div class="custom-checkout-warning">
+        <strong>Terms and conditions</strong>
+        <ul>
+            <li>No cancellation of order after payment </li>
+            <li>No change of date of collection </li>
+            <li>No refund for non collection of order. </li>
+            <li>There may be waiting time during collection as some ingredients are prepared fresh. There will be an express queue for pre-order collection.
+                由于部分食材为新鲜制作，取货时可能需要等待。预订取货将设有快速通道。
+
+
+                付款后不可取消订单
+                不可更改取货日期
+                没取货订单，恕不退款。</li>
+        </ul>
+    </div>
 <?php
 });
 
@@ -99,26 +106,27 @@ add_action("woocommerce_checkout_before_customer_details", "parse_pickup_form");
 function parse_pickup_form()
 {
 ?>
-<h3 class="spb-title">Store</h3>
+    <h3 class="spb-title">Store</h3>
 
-<div class="spb-fixed-info">
-    <p>
-        <strong>Location</strong><br>
-        Chinatown Complex<br>
-        335 Smith St, #02-177, Singapore 050335
-    </p>
-    <p>
-        <strong>Pick up time</strong><br>
-        9AM – 8PM
-    </p>
-</div>
-<div class="spb-section">
-    <h3 class="spb-label">Pick up date</h3>
-    <input type="text" id="pickup_date" name="pickup_date" placeholder="Select date" required>
-    <small class="spb-note">
-        *All Orders must be made at least 1 day in advance
-    </small>
-</div>
+    <div class="spb-fixed-info">
+        <p>
+            <strong>Location</strong><br>
+            Chinatown Complex<br>
+            335 Smith St, #02-177, Singapore 050335
+        </p>
+        <p>
+            <strong>Pick up time</strong><br>
+            9AM – 8PM
+        </p>
+    </div>
+    <div class="spb-section">
+        <h3 class="spb-label">Pick up date</h3>
+        <input type="text" id="pickup_date" name="pickup_date" placeholder="Select date" required>
+        <small class="spb-note">
+            *All Orders must be made at least 1 day in advance
+            所有订单必须至少提前一天预订。
+        </small>
+    </div>
 <?php
 }
 
