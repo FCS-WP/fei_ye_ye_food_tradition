@@ -114,7 +114,8 @@ add_filter(
 
 add_filter('woocommerce_widget_cart_item_quantity', function ($html, $cart_item, $cart_item_key) {
 
-    if (empty($cart_item['addons'])) return $html;
+    $qty = $cart_item['quantity'];
+    return '<span class="mini-cart-qty">× ' . $qty . '</span>';
 }, 10, 3);
 
 
