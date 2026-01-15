@@ -1,0 +1,29 @@
+#cart-block {
+  font-family: var(--e-global-typography-primary-font-family);
+  .woocommerce-cart-form {
+    thead {
+      background-color: var(--e-global-color-primary);
+      th {
+        color: #fff !important;
+      }
+    }
+    .variation {
+      dt {
+        font-weight: 700;
+        padding-right: 5px !important;
+      }
+      dd {
+        margin: 5px 0px;
+        font-weight: 400 !important;
+      }
+    }
+    .coupon {
+      button {
+        padding: 12px 20px;
+      }
+    }
+    .product-name a {
+      color: var(--e-global-color-primary);
+    }
+  }
+}

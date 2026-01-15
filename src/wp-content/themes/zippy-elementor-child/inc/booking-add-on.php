@@ -51,7 +51,12 @@ add_action('woocommerce_before_add_to_cart_button', function () {
                         ?>
             <img src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr($addon->get_name()); ?>">
             <input type="checkbox" name="addons[]" value="<?php echo esc_attr($addon->get_id()); ?>">
-            <?php echo esc_html($addon->get_name()); ?>
+            <?php
+                        echo '<span class ="single-addon">';
+                        echo '<span class="addon-cn">' . esc_html(get_field('product_china_name', $addon->get_id())) . '</span>';
+                        echo '<span class="addon-desc">' . esc_html($addon->get_short_description()) . '</span>';
+                        echo '</span>';
+                        ?>
             <span class="spb-addon-price">
                 (+<?php echo wc_price($addon->get_price()); ?>)
             </span>
@@ -159,10 +164,7 @@ add_filter(
 
 /* 5. DISPLAY CART / CHECKOUT */
 add_filter('woocommerce_get_item_data', function ($item_data, $cart_item) {
-    // $item_data[] = [
-    //     'name' => '',
-    //     'value' => '123'
-    // ];
+
     if (!empty($cart_item['addons'])) {
 
         foreach ($cart_item['addons'] as $addon_id => $addon_qty) {
