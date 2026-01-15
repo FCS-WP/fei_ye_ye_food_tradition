@@ -116,8 +116,19 @@ function parse_pickup_form()
     <h3 class="spb-label">Pick up date</h3>
     <input type="text" id="pickup_date" name="pickup_date" placeholder="Select date" required>
     <small class="spb-note">
-        *All orders must be made 1 day in advance
+        *All Orders must be made at least 1 day in advance
     </small>
 </div>
 <?php
+}
+
+add_filter('woocommerce_cart_item_price', 'show_base_price_of_product', 10, 3);
+function show_base_price_of_product($price_html, $cart_item, $cart_item_key)
+{
+    // pr($cart_item);
+    if (!isset($cart_item['data'])) {
+        return $price_html;
+    }
+    $base_price = $cart_item['data']->get_regular_price();
+    return wc_price($base_price);
 }
