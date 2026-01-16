@@ -90,16 +90,17 @@ add_filter('woocommerce_add_cart_item_data', function ($cart_item_data) {
 
         $addons     = array_map('sanitize_text_field', $_POST['addons']);
         $quantities = array_map('sanitize_text_field', $_POST['addons_qty']);
+        $final_qty_list = array_values(array_filter($quantities));
 
         $final_addons = [];
 
         foreach ($addons as $index => $addon_name) {
             if (
-                isset($quantities[$index]) &&
-                $quantities[$index] !== '' &&
-                (int) $quantities[$index] > 0
+                isset($final_qty_list[$index]) &&
+                $final_qty_list[$index] !== '' &&
+                (int) $final_qty_list[$index] > 0
             ) {
-                $final_addons[$addon_name] = (int) $quantities[$index];
+                $final_addons[$addon_name] = (int) $final_qty_list[$index];
             }
         }
 
