@@ -87,14 +87,30 @@ add_filter('woocommerce_add_cart_item_data', function ($cart_item_data) {
     }
 
     if (!empty($_POST['addons_qty']) && !empty($_POST['addons'])) {
-        $raw_qty_list = array_map('sanitize_text_field', $_POST['addons_qty']);
-        $raw_addons_list = array_map('sanitize_text_field', $_POST['addons']);
-        $final_qty_list = array_values(array_filter($raw_qty_list));
-        $final_addons = array_combine($raw_addons_list, $final_qty_list);
-        $cart_item_data['addons'] = $final_addons;
+
+        $addons     = array_map('sanitize_text_field', $_POST['addons']);
+        $quantities = array_map('sanitize_text_field', $_POST['addons_qty']);
+
+        $final_addons = [];
+
+        foreach ($addons as $index => $addon_name) {
+            if (
+                isset($quantities[$index]) &&
+                $quantities[$index] !== '' &&
+                (int) $quantities[$index] > 0
+            ) {
+                $final_addons[$addon_name] = (int) $quantities[$index];
+            }
+        }
+
+        if (!empty($final_addons)) {
+            $cart_item_data['addons'] = $final_addons;
+        }
     }
+
     return $cart_item_data;
 });
+
 
 add_filter(
     'woocommerce_get_cart_item_from_session',
@@ -227,13 +243,16 @@ function display_pickup_date_in_order($order)
 {
     $pickup_date = $order->get_meta('_pickup_date');
     if (empty($pickup_date)) return;
+
 ?>
     <div class="order_data_column">
         <p>
             <strong>Pick Up Date:</strong><br>
-            <?php echo esc_html($pickup_date); ?>
+            <?php echo esc_html(date('d/m/Y', strtotime($pickup_date)));
+            ?>
         </p>
     </div>
+    <p style="color:#102870;font-weight:500">Pre-order - Delivery starts from February</p>
 <?php
 
 }

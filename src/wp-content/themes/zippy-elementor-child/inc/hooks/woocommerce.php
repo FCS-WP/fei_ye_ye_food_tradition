@@ -123,7 +123,7 @@ function parse_pickup_form()
         <h3 class="spb-label">Pick up date</h3>
         <input type="text" id="pickup_date" name="pickup_date" placeholder="Select date" required>
         <small class="spb-note">
-            *All Orders must be made at least 1 day in advance
+            *All Orders must be made at least 1 day in advance <br>
             所有订单必须至少提前一天预订。
         </small>
     </div>
