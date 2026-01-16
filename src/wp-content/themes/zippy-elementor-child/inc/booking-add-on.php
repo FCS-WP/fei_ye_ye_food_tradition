@@ -33,39 +33,39 @@ add_action('woocommerce_before_add_to_cart_button', function () {
     ]);
 ?>
 
-    <div class="spb-booking-box">
+<div class="spb-booking-box">
 
-        <p class="spb-walkin-note">
-            *Items are still available for same day walk-in purchase.</br>
-            *Limited to a max of 2 quantities for each add-ons per Yusheng set.
-        </p>
-        <?php if (!empty($addon_products)) : ?>
-            <div class="spb-section">
-                <label class="spb-label">Add-ons</label>
+    <p class="spb-walkin-note">
+        *Items are still available for same day walk-in purchase.</br>
+        *Limited to a max of 2 quantities for each add-ons per Yusheng set.
+    </p>
+    <?php if (!empty($addon_products)) : ?>
+    <div class="spb-section">
+        <label class="spb-label">Add-ons</label>
 
-                <?php foreach ($addon_products as $addon) : ?>
-                    <label class="spb-addon" data-product-id="<?php echo esc_attr($addon->get_id()); ?>">
-                        <?php
+        <?php foreach ($addon_products as $addon) : ?>
+        <label class="spb-addon" data-product-id="<?php echo esc_attr($addon->get_id()); ?>">
+            <?php
                         $image_id  = $addon->get_image_id();
                         $image_url = wp_get_attachment_url($image_id);
                         ?>
-                        <img src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr($addon->get_name()); ?>">
-                        <input type="checkbox" name="addons[]" value="<?php echo esc_attr($addon->get_id()); ?>">
-                        <?php
+            <img src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr($addon->get_name()); ?>">
+            <input type="checkbox" name="addons[]" value="<?php echo esc_attr($addon->get_id()); ?>">
+            <?php
                         echo '<span class ="single-addon">';
                         echo '<span class="addon-cn">' . esc_html(get_field('product_china_name', $addon->get_id())) . '</span>';
                         echo '<span class="addon-desc">' . esc_html($addon->get_short_description()) . '</span>';
                         echo '</span>';
                         ?>
-                        <span class="spb-addon-price">
-                            (+<?php echo wc_price($addon->get_price()); ?>)
-                        </span>
-                        <input class="spb-addon-qty" name="addons_qty[]" type="number" min=1 max=2>
-                    </label>
-                <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
+            <span class="spb-addon-price">
+                (+<?php echo wc_price($addon->get_price()); ?>)
+            </span>
+            <input class="spb-addon-qty" name="addons_qty[]" type="number" min=1 max=2>
+        </label>
+        <?php endforeach; ?>
     </div>
+    <?php endif; ?>
+</div>
 
 <?php
     echo ob_get_clean();
@@ -245,14 +245,14 @@ function display_pickup_date_in_order($order)
     if (empty($pickup_date)) return;
 
 ?>
-    <div class="order_data_column">
-        <p>
-            <strong>Pick Up Date:</strong><br>
-            <?php echo esc_html(date('d/m/Y', strtotime($pickup_date)));
+<div class="order_data_column">
+    <p>
+        <strong>Pick Up Date:</strong><br>
+        <?php echo esc_html(date('d/m/Y', strtotime($pickup_date)));
             ?>
-        </p>
-    </div>
-    <p style="color:#102870;font-weight:500">Pre-order - Delivery starts from February</p>
+    </p>
+</div>
+<p style="color:#102870;font-weight:500">Pre-order - Delivery starts from February</p>
 <?php
 
 }
@@ -304,19 +304,19 @@ function show_pickup_date_under_billing_in_email($order, $sent_to_admin, $plain_
 
     if ($plain_text) return;
 ?>
-    <table cellspacing="0" cellpadding="0" style="width:100%; margin-top:12px;">
-        <tr>
-            <td style="padding:0; vertical-align:top;">
-                <h3 style="margin:0 0 6px;">Location</h3>
-                Chinatown Complex 335 Smith St, #02-177, Singapore 050335
-            </td>
-            <td style="padding:0; vertical-align:top;">
-                <h3 style="margin:0 0 6px;">Pick Up Date</h3>
+<table cellspacing="0" cellpadding="0" style="width:100%; margin-top:12px;">
+    <tr>
+        <td style="padding:0; vertical-align:top;">
+            <h3 style="margin:0 0 6px;">Location</h3>
+            Chinatown Complex 335 Smith St, #02-177, Singapore 050335
+        </td>
+        <td style="padding:0; vertical-align:top;">
+            <h3 style="margin:0 0 6px;">Pick Up Date</h3>
 
-                <?php date('d/m/Y', strtotime($pickup_date)); ?>
-            </td>
-        </tr>
-    </table>
+            <?php echo date('d/m/Y', strtotime($pickup_date)); ?>
+        </td>
+    </tr>
+</table>
 
 <?php
 }
