@@ -45,7 +45,7 @@ jobs:
             # Verify node version
             node -v
 
-            cd /var/www/epos_com
+            cd /var/www/fei_ye_ye_food_tradition
 
             # 1. Update code to the specific tag
             git fetch --tags
@@ -53,7 +53,7 @@ jobs:
 
             # 2. Re-generate .env from GitHub Secrets
             echo "PROJECT_ID=${{ secrets.PROJECT_ID }}" > .env
-            echo "WORDPRESS_DB_NAME=${{ secrets.WORDPRESS_DB_NAME }}" >> .env
+            echo "WORDPRESS_DB_NAME=${{ secrets.PROJECT_ID }}" >> .env
             echo "WORDPRESS_DB_USER=${{ secrets.WORDPRESS_DB_USER }}" >> .env
             echo "WORDPRESS_DB_PASSWORD=${{ secrets.WORDPRESS_DB_PASSWORD }}" >> .env
             echo "WORDPRESS_DB_HOST=mysql" >> .env
