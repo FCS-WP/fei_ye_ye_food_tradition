@@ -1,0 +1,101 @@
+name: FCS Wordpress Deploy Via Docker & SSH
+
+run-name: FCS Wordpress Deploy To Server 🚀
+on:
+  push:
+    tags:
+      - "deploy-*"
+
+jobs:
+  send_deploying:
+    name: Send Telegram Message When Deploying
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Telegram Message When Deploying
+        uses: appleboy/telegram-action@master
+        with:
+          to: -1002034905977
+          token: 6611988217:AAERCNw3lNbdpABmMztQudQXBuPcp1jsKdk
+          format: html
+          message: |
+            <i><code>${{ github.ref_name }}</code><b> Website Deploying... 🚀</b></i>
+
+            <b>Details:</b>
+            Project name 💻: ${{ github.repository }}
+            Version 🏷️: ${{ github.ref_name }}
+
+  web-deploy-via-ssh:
+    name: 🚀 Deploy Website To Production
+    runs-on: ubuntu-latest
+    needs: send_deploying
+    steps:
+      - name: 🚚 Get Latest Code
+        uses: actions/checkout@v4
+
+      - name: 🚀 SSH Remote Deployment
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: "deployer"
+          key: ${{ secrets.DO_SSH_KEY }}
+          script: |
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+            # Verify node version
+            node -v
+
+            cd /var/www/epos_com
+
+            # 1. Update code to the specific tag
+            git fetch --tags
+            git checkout ${{ github.ref_name }}
+
+            # 2. Re-generate .env from GitHub Secrets
+            echo "PROJECT_ID=${{ secrets.PROJECT_ID }}" > .env
+            echo "WORDPRESS_DB_NAME=${{ secrets.WORDPRESS_DB_NAME }}" >> .env
+            echo "WORDPRESS_DB_USER=${{ secrets.WORDPRESS_DB_USER }}" >> .env
+            echo "WORDPRESS_DB_PASSWORD=${{ secrets.WORDPRESS_DB_PASSWORD }}" >> .env
+            echo "WORDPRESS_DB_HOST=mysql" >> .env
+            echo "WORDPRESS_TABLE_PREFIX=fcs_data_" >> .env
+
+            # 3 Build Assets
+            sudo chown -R deployer:deployer .
+            echo "Installing dependencies with Yarn..."
+            yarn install --frozen-lockfile
+
+            echo "Building assets with Webpack..."
+            yarn build
+
+            # 4. Cleanup Node Modules & Yarn Cache
+            echo "Cleaning up..."
+            rm -rf node_modules
+            yarn cache clean
+
+            # 5. Restart Docker containers
+            docker compose up -d --build
+
+            # 6. Cleanup & Permissions
+            docker image prune -f
+            sudo chown -R 33:33 src/wp-content
+            sudo chmod -R 775 src/wp-content
+
+  notification-to-telegram:
+    runs-on: ubuntu-latest
+    needs: [send_deploying, web-deploy-via-ssh]
+    if: always() && (needs.web-deploy-via-ssh.result == 'success')
+    steps:
+      - name: Telegram Notification
+        uses: appleboy/telegram-action@master
+        with:
+          to: -1002034905977
+          token: 6611988217:AAERCNw3lNbdpABmMztQudQXBuPcp1jsKdk
+
+          format: html
+          message: |
+            <i><code>${{ github.ref_name }}</code><b> Website Deployed ✅</b></i>
+
+            <b>Details:</b>
+            Version 🏷️: ${{ github.ref_name }}
+            Project: https://github.com/${{ github.repository }}
+            Live Link: https://theshin.info
