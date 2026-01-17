@@ -33,39 +33,39 @@ add_action('woocommerce_before_add_to_cart_button', function () {
     ]);
 ?>
 
-<div class="spb-booking-box">
+    <div class="spb-booking-box">
 
-    <p class="spb-walkin-note">
-        *Items are still available for same day walk-in purchase.</br>
-        *Limited to a max of 2 quantities for each add-ons per Yusheng set.
-    </p>
-    <?php if (!empty($addon_products)) : ?>
-    <div class="spb-section">
-        <label class="spb-label">Add-ons</label>
+        <p class="spb-walkin-note">
+            *Items are still available for same day walk-in purchase.</br>
+            *Limited to a max of 2 quantities for each add-ons per Yusheng set.
+        </p>
+        <?php if (!empty($addon_products)) : ?>
+            <div class="spb-section">
+                <label class="spb-label">Add-ons</label>
 
-        <?php foreach ($addon_products as $addon) : ?>
-        <label class="spb-addon" data-product-id="<?php echo esc_attr($addon->get_id()); ?>">
-            <?php
+                <?php foreach ($addon_products as $addon) : ?>
+                    <label class="spb-addon" data-product-id="<?php echo esc_attr($addon->get_id()); ?>">
+                        <?php
                         $image_id  = $addon->get_image_id();
                         $image_url = wp_get_attachment_url($image_id);
                         ?>
-            <img src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr($addon->get_name()); ?>">
-            <input type="checkbox" name="addons[]" value="<?php echo esc_attr($addon->get_id()); ?>">
-            <?php
+                        <img src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr($addon->get_name()); ?>">
+                        <input type="checkbox" name="addons[]" value="<?php echo esc_attr($addon->get_id()); ?>">
+                        <?php
                         echo '<span class ="single-addon">';
                         echo '<span class="addon-cn">' . esc_html(get_field('product_china_name', $addon->get_id())) . '</span>';
                         echo '<span class="addon-desc">' . esc_html($addon->get_short_description()) . '</span>';
                         echo '</span>';
                         ?>
-            <span class="spb-addon-price">
-                (+<?php echo wc_price($addon->get_price()); ?>)
-            </span>
-            <input class="spb-addon-qty" name="addons_qty[]" type="number" min=1 max=2>
-        </label>
-        <?php endforeach; ?>
+                        <span class="spb-addon-price">
+                            (+<?php echo wc_price($addon->get_price()); ?>)
+                        </span>
+                        <input class="spb-addon-qty" name="addons_qty[]" type="number" min=1 max=2>
+                    </label>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
     </div>
-    <?php endif; ?>
-</div>
 
 <?php
     echo ob_get_clean();
@@ -87,14 +87,31 @@ add_filter('woocommerce_add_cart_item_data', function ($cart_item_data) {
     }
 
     if (!empty($_POST['addons_qty']) && !empty($_POST['addons'])) {
-        $raw_qty_list = array_map('sanitize_text_field', $_POST['addons_qty']);
-        $raw_addons_list = array_map('sanitize_text_field', $_POST['addons']);
-        $final_qty_list = array_values(array_filter($raw_qty_list));
-        $final_addons = array_combine($raw_addons_list, $final_qty_list);
-        $cart_item_data['addons'] = $final_addons;
+
+        $addons     = array_map('sanitize_text_field', $_POST['addons']);
+        $quantities = array_map('sanitize_text_field', $_POST['addons_qty']);
+        $final_qty_list = array_values(array_filter($quantities));
+
+        $final_addons = [];
+
+        foreach ($addons as $index => $addon_name) {
+            if (
+                isset($final_qty_list[$index]) &&
+                $final_qty_list[$index] !== '' &&
+                (int) $final_qty_list[$index] > 0
+            ) {
+                $final_addons[$addon_name] = (int) $final_qty_list[$index];
+            }
+        }
+
+        if (!empty($final_addons)) {
+            $cart_item_data['addons'] = $final_addons;
+        }
     }
+
     return $cart_item_data;
 });
+
 
 add_filter(
     'woocommerce_get_cart_item_from_session',
@@ -202,27 +219,41 @@ add_action('woocommerce_checkout_create_order_line_item', function ($item, $cart
 
 /* 6.1 SAVE PICKUP DATE TO ORDER AND SHOW (ADMIN) */
 add_action('woocommerce_checkout_create_order', 'save_pickup_date_to_order_meta', 20, 2);
+
 function save_pickup_date_to_order_meta($order, $data)
 {
-    if (isset($_POST['pickup_date']) && !empty($_POST['pickup_date'])) {
+
+    if (empty($_POST['pickup_date'])) {
+        return;
+    }
+
+    $raw_date = sanitize_text_field($_POST['pickup_date']);
+
+    $date = DateTime::createFromFormat('d/m/Y', $raw_date);
+
+    if ($date) {
         $order->update_meta_data(
             '_pickup_date',
-            sanitize_text_field($_POST['pickup_date'])
+            $date->format('Y-m-d')
         );
     }
 }
+
 add_action("woocommerce_admin_order_data_after_billing_address", 'display_pickup_date_in_order');
 function display_pickup_date_in_order($order)
 {
     $pickup_date = $order->get_meta('_pickup_date');
     if (empty($pickup_date)) return;
+
 ?>
-<div class="order_data_column">
-    <p>
-        <strong>Pick Up Date:</strong><br>
-        <?php echo esc_html($pickup_date); ?>
-    </p>
-</div>
+    <div class="order_data_column">
+        <p>
+            <strong>Pick Up Date:</strong><br>
+            <?php echo esc_html(date('d/m/Y', strtotime($pickup_date)));
+            ?>
+        </p>
+    </div>
+    <p style="color:#102870;font-weight:500">Pre-order - Delivery starts from February</p>
 <?php
 
 }
@@ -248,7 +279,7 @@ add_action('woocommerce_thankyou', function ($order_id) {
     </p>';
 
     if ($pickup_date) {
-        echo '<p><strong>Pick Up Date:</strong><br>' . esc_html($pickup_date) . '</p>';
+        echo '<p><strong>Pick Up Date:</strong><br>' . date('d/m/Y', strtotime($pickup_date)) . '</p>';
     }
     echo '<hr style="margin:16px 0;">';
 
@@ -274,19 +305,19 @@ function show_pickup_date_under_billing_in_email($order, $sent_to_admin, $plain_
 
     if ($plain_text) return;
 ?>
-<table cellspacing="0" cellpadding="0" style="width:100%; margin-top:12px;">
-    <tr>
-        <td style="padding:0; vertical-align:top;">
-            <h3 style="margin:0 0 6px;">Location</h3>
-            Chinatown Complex 335 Smith St, #02-177, Singapore 050335
-        </td>
-        <td style="padding:0; vertical-align:top;">
-            <h3 style="margin:0 0 6px;">Pick Up Date</h3>
+    <table cellspacing="0" cellpadding="0" style="width:100%; margin-top:12px;">
+        <tr>
+            <td style="padding:0; vertical-align:top;">
+                <h3 style="margin:0 0 6px;">Location</h3>
+                Chinatown Complex 335 Smith St, #02-177, Singapore 050335
+            </td>
+            <td style="padding:0; vertical-align:top;">
+                <h3 style="margin:0 0 6px;">Pick Up Date</h3>
 
-            <?php echo esc_html($pickup_date); ?>
-        </td>
-    </tr>
-</table>
+                <?php date('d/m/Y', strtotime($pickup_date)); ?>
+            </td>
+        </tr>
+    </table>
 
 <?php
 }
