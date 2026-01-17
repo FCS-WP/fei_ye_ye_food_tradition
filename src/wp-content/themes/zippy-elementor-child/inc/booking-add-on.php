@@ -314,7 +314,7 @@ function show_pickup_date_under_billing_in_email($order, $sent_to_admin, $plain_
             <td style="padding:0; vertical-align:top;">
                 <h3 style="margin:0 0 6px;">Pick Up Date</h3>
 
-                <?php date('d/m/Y', strtotime($pickup_date)); ?>
+                <?php echo date('d/m/Y', strtotime($pickup_date)); ?>
             </td>
         </tr>
     </table>
