@@ -11,7 +11,7 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 // Define Theme name
-const themeName = process.env.THEME_NAME ? process.env.THEME_NAME : "zippy";
+const themeName = process.env.THEME_NAME ? process.env.THEME_NAME : "zippy-elementor";
 const destChildTheme = "./src/wp-content/themes/" + themeName + "-child";
 const localDomain = process.env.PROJECT_HOST
   ? process.env.PROJECT_HOST
